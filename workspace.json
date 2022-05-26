@@ -1,0 +1,8 @@
+{
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json",
+  "version": 2,
+  "projects": {
+    "cb-pay-demo": "apps/cb-pay-demo",
+    "cb-pay-demo-e2e": "apps/cb-pay-demo-e2e"
+  }
+}
