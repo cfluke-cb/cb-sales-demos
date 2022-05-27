@@ -9,18 +9,21 @@
   },
   "private": true,
   "dependencies": {
+    "@coinbase/cbpay-js": "^1.0.1",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^5.8.0",
     "@mui/material": "^5.8.1",
     "@solana/wallet-adapter-phantom": "^0.9.3",
     "@solana/wallet-adapter-react": "^0.15.5",
+    "bs58": "^5.0.0",
     "core-js": "^3.6.5",
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-router-dom": "^6.3.0",
     "regenerator-runtime": "0.13.7",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "11.9.2",
