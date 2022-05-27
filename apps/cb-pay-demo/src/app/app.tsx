@@ -1,5 +1,6 @@
 import { createTheme, ThemeProvider } from '@mui/material';
 import { Router } from './routes';
+import { Context as WalletProvider } from './context/walletProvider';
 
 const mdTheme = createTheme({
   palette: {
@@ -24,13 +25,22 @@ const mdTheme = createTheme({
         },
       },
     },
+    MuiSvgIcon: {
+      styleOverrides: {
+        root: {
+          color: 'darkgray',
+        },
+      },
+    },
   },
 });
 
 export function App() {
   return (
     <ThemeProvider theme={mdTheme}>
-      <Router />
+      <WalletProvider>
+        <Router />
+      </WalletProvider>
     </ThemeProvider>
   );
 }

@@ -1,4 +1,6 @@
 import { FC, useState, useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { useWallet } from '@solana/wallet-adapter-react';
 import {
   Box,
   Toolbar,
@@ -14,17 +16,16 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
-import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import HomeIcon from '@mui/icons-material/Home';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import ChatIcon from '@mui/icons-material/Chat';
-import { Outlet } from 'react-router-dom';
+
+import { LogoDark } from './logos/logoDark';
+import { LogoWordmark } from './logos/logoWordmark';
 
 const mobileWidth = 767;
-const drawerWidth = 240;
 const navItems = [
   {
     title: 'Home',
@@ -45,12 +46,18 @@ const navItems = [
 ];
 
 export const Layout: FC = () => {
+  const navigate = useNavigate();
+  const { connected, publicKey } = useWallet();
   const [isMobile, setIsMobile] = useState(window.innerWidth < mobileWidth);
   const [maxMobileWidth, setMobileWidth] = useState(window.innerWidth - 130);
+  const [drawerWidth, setDrawerWidth] = useState(80);
+  const [desktopMinimized, setDesktopMinimized] = useState(true);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < mobileWidth);
+      const mobile = window.innerWidth < mobileWidth;
+      setIsMobile(mobile);
+      if (mobile && !isMobile && desktopMinimized) setDesktopMinimized(false);
       setMobileWidth(window.innerWidth - 130);
     };
     window.addEventListener('resize', handleResize);
@@ -66,18 +73,45 @@ export const Layout: FC = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const handleLogoClick = () => {
+    if (isMobile) return;
+    setDesktopMinimized(!desktopMinimized);
+    if (desktopMinimized) {
+      setDrawerWidth(240);
+    } else {
+      setDrawerWidth(80);
+    }
+  };
+
+  const handleNavigate = (path: string) => {
+    navigate(path?.toLowerCase());
+  };
+
   const drawer = (
     <div>
-      <Toolbar />
+      <Toolbar>
+        {desktopMinimized ? (
+          <Box onClick={handleLogoClick}>
+            <LogoDark />
+          </Box>
+        ) : (
+          <Box onClick={handleLogoClick}>
+            <LogoWordmark />
+          </Box>
+        )}
+      </Toolbar>
       <Divider />
       <List>
         {navItems.map((item) => (
           <ListItem key={`nav-item-${item.title}`} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
+            <ListItemButton
+              sx={{ justifyContent: 'space-around' }}
+              onClick={() => handleNavigate(item.title)}
+            >
+              <ListItemIcon sx={{ justifyContent: 'space-around' }}>
                 <item.Icon />
               </ListItemIcon>
-              <ListItemText primary={item.title} />
+              {!desktopMinimized && <ListItemText primary={item.title} />}
             </ListItemButton>
           </ListItem>
         ))}
@@ -88,8 +122,14 @@ export const Layout: FC = () => {
   const container =
     window !== undefined ? () => window.document.body : undefined;
 
+  let walletAddr = '';
+  if (publicKey) {
+    const b = publicKey?.toBase58();
+    walletAddr = b.slice(0, 4) + '...' + b.slice(-4);
+  }
+
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', flexGrow: 1 }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -98,7 +138,7 @@ export const Layout: FC = () => {
           ml: { sm: `${drawerWidth}px` },
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -111,6 +151,15 @@ export const Layout: FC = () => {
           <Typography variant="h6" noWrap component="div">
             A Friend of Ours
           </Typography>
+          {connected && (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <AccountBalanceWalletIcon
+                fontSize="large"
+                sx={{ color: '#3C2AC3' }}
+              />
+              <Box sx={{ p: 1 }}>{walletAddr}</Box>
+            </Box>
+          )}
         </Toolbar>
       </AppBar>
       <Box
@@ -160,9 +209,7 @@ export const Layout: FC = () => {
         }}
       >
         <Toolbar />
-
         <Outlet context={{ isMobile, maxMobileWidth }} />
-        <div>Footer</div>
       </Box>
     </Box>
   );
