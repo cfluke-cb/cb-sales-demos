@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   CardContent,
-  Container,
   Grid,
   Typography,
   FormControl,
@@ -11,11 +10,14 @@ import {
   MenuItem,
   InputLabel,
   SelectChangeEvent,
+  Stack,
+  CardHeader,
 } from '@mui/material';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { PageContainer } from '../components/PageContainer';
 import { WalletStatus } from '../components/WalletStatus';
 import NetworkContext from '../context/networkProvider';
 
@@ -86,33 +88,47 @@ export const Wallet = () => {
     setNetwork?.(event.target.value as WalletAdapterNetwork);
     setAccount(null);
   };
-  console.log('chain options', chainOptions, network);
 
-  let walletAddr = null;
-  if (publicKey) {
-    walletAddr = publicKey?.toBase58();
-  }
+  const walletAddr = publicKey?.toBase58();
 
   return (
-    <Container>
-      <Typography variant="h3">Connect Dat Wallet</Typography>
+    <PageContainer>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Card>
+            <CardHeader title="Let's connect the Wallet" />
             <CardContent>
-              Some wallet options here, do we need any?
-              <WalletStatus />
-              {walletAddr && (
-                <Typography variant="inherit">
-                  Wallet Address: {walletAddr}
-                </Typography>
-              )}
-              {account?.fmtBalance && (
-                <Typography variant="inherit">
-                  Balance: {account.fmtBalance}
-                </Typography>
-              )}
-              <br />
+              <Stack spacing={3} paddingBottom={4}>
+                <WalletStatus />
+                {walletAddr && (
+                  <>
+                    <Typography variant="inherit" fontWeight={600}>
+                      Address:
+                      <Typography
+                        variant="inherit"
+                        textOverflow={'ellipsis'}
+                        fontWeight={400}
+                        paddingLeft={2}
+                        overflow="hidden"
+                      >
+                        {walletAddr}
+                      </Typography>
+                    </Typography>
+                    <Typography variant="inherit" fontWeight={600}>
+                      Balance:
+                      <Typography
+                        variant="inherit"
+                        textOverflow={'ellipsis'}
+                        fontWeight={400}
+                        paddingLeft={2}
+                        overflow="hidden"
+                      >
+                        {account?.fmtBalance || 0}
+                      </Typography>
+                    </Typography>
+                  </>
+                )}
+              </Stack>
               <FormControl fullWidth>
                 <InputLabel id="chain-select=label">Chain</InputLabel>
                 <Select
@@ -158,6 +174,6 @@ export const Wallet = () => {
           )}
         </Grid>
       </Grid>
-    </Container>
+    </PageContainer>
   );
 };

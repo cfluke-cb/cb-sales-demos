@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { initOnRamp } from '@coinbase/cbpay-js';
 import {
-  Container,
+  CardHeader,
   Typography,
   Card,
   CardContent,
@@ -9,7 +9,13 @@ import {
   Stack,
   Divider,
   Grid,
+  FormGroup,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
 } from '@mui/material';
+import { PageContainer } from '../components/PageContainer';
 
 const appId = '';
 const destWalletAddr = '';
@@ -19,7 +25,13 @@ interface CBPayInstanceType {
   destroy: () => void;
 }
 
-export const PayWithCoinbaseButton: React.FC = () => {
+type Experience = 'embedded' | 'popup' | 'new_tab';
+
+export const PayWithCoinbaseButton = ({
+  experience,
+}: {
+  experience: Experience;
+}) => {
   const onrampInstance = useRef<CBPayInstanceType>();
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState('');
@@ -33,8 +45,8 @@ export const PayWithCoinbaseButton: React.FC = () => {
         destinationWallets: [
           {
             address: destWalletAddr,
-            //blockchains: ['ethereum', 'avalanche-c-chain'],
-            assets: ['ETH', 'USDC'],
+            blockchains: ['solana'],
+            //assets: ['ETH', 'USDC'],
           },
         ],
       },
@@ -50,12 +62,10 @@ export const PayWithCoinbaseButton: React.FC = () => {
       },
       onEvent: (event: any) => {
         console.log('event', event);
-        events.push(event);
-        console.log('settings events', events);
-        setEvents(events);
+        setEvents((events) => [...events, event]);
       },
-      experienceLoggedIn: 'embedded', //'embedded', 'popup', or 'newtab',
-      experienceLoggedOut: 'embedded',
+      experienceLoggedIn: experience, //'embedded', 'popup', or 'newtab',
+      experienceLoggedOut: experience,
       closeOnExit: true,
       closeOnSuccess: true,
     });
@@ -63,7 +73,7 @@ export const PayWithCoinbaseButton: React.FC = () => {
     return () => {
       onrampInstance.current?.destroy();
     };
-  }, []);
+  }, [experience]);
 
   const handleClick = () => {
     console.log(onrampInstance);
@@ -95,19 +105,45 @@ export const PayWithCoinbaseButton: React.FC = () => {
   );
 };
 
+const expOptions = [
+  { label: 'Embedded', value: 'embedded' },
+  { label: 'Pop-up', value: 'popup' },
+  { label: 'New Tab', value: 'new_tab' },
+];
+
 export const Pay = () => {
+  const [experienceType, setExperienceType] = useState<Experience>('embedded');
   return (
-    <Container>
-      <Typography variant="h3">Let's add Pay</Typography>
+    <PageContainer>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Card>
+            <CardHeader title="Let's add Pay" />
             <CardContent>
-              <PayWithCoinbaseButton />
+              <FormGroup>
+                <FormControl fullWidth>
+                  <InputLabel id="exp-select=label">Experience</InputLabel>
+                  <Select
+                    labelId="exp-select-label"
+                    value={experienceType}
+                    label="Experience"
+                    onChange={(e) =>
+                      setExperienceType(e.target.value as Experience)
+                    }
+                  >
+                    {expOptions.map((c) => (
+                      <MenuItem value={c.value}>{c.label}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </FormGroup>
+              <br />
+              <br />
+              <PayWithCoinbaseButton experience={experienceType} />
             </CardContent>
           </Card>
         </Grid>
       </Grid>
-    </Container>
+    </PageContainer>
   );
 };

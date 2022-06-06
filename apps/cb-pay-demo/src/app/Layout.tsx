@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useOutletContext } from 'react-router-dom';
 import { useWallet } from '@solana/wallet-adapter-react';
 import {
   Box,
@@ -25,6 +25,11 @@ import ChatIcon from '@mui/icons-material/Chat';
 import { LogoDark } from './logos/logoDark';
 import { LogoWordmark } from './logos/logoWordmark';
 
+type LayoutType = {
+  isMobile: boolean;
+  maxMobileWidth: number;
+};
+
 const mobileWidth = 767;
 const navItems = [
   {
@@ -49,15 +54,16 @@ export const Layout: FC = () => {
   const navigate = useNavigate();
   const { connected, publicKey } = useWallet();
   const [isMobile, setIsMobile] = useState(window.innerWidth < mobileWidth);
-  const [maxMobileWidth, setMobileWidth] = useState(window.innerWidth - 130);
-  const [drawerWidth, setDrawerWidth] = useState(80);
-  const [desktopMinimized, setDesktopMinimized] = useState(true);
+  const [maxMobileWidth, setMobileWidth] = useState(window.innerWidth - 40);
+  const [drawerWidth, setDrawerWidth] = useState(isMobile ? 240 : 80);
+  const [desktopMinimized, setDesktopMinimized] = useState(!isMobile);
 
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < mobileWidth;
       setIsMobile(mobile);
       if (mobile && !isMobile && desktopMinimized) setDesktopMinimized(false);
+      if (mobile && !isMobile) setDrawerWidth(240);
       setMobileWidth(window.innerWidth - 130);
     };
     window.addEventListener('resize', handleResize);
@@ -65,7 +71,7 @@ export const Layout: FC = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [isMobile, desktopMinimized]);
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -85,6 +91,7 @@ export const Layout: FC = () => {
 
   const handleNavigate = (path: string) => {
     navigate(path?.toLowerCase());
+    if (isMobile) setMobileOpen(false);
   };
 
   const drawer = (
@@ -214,3 +221,7 @@ export const Layout: FC = () => {
     </Box>
   );
 };
+
+export function useLayoutContext() {
+  return useOutletContext<LayoutType>();
+}

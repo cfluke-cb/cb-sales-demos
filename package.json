@@ -21,9 +21,11 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-router-dom": "^6.3.0",
+    "react-use-websocket": "^4.2.0",
     "regenerator-runtime": "0.13.7",
     "tslib": "^2.3.0",
-    "tweetnacl": "^1.0.3"
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "11.9.2",
@@ -35,6 +37,7 @@
     "@nrwl/react": "14.1.9",
     "@nrwl/web": "14.1.9",
     "@nrwl/workspace": "14.1.9",
+    "@nx-go/nx-go": "^2.5.0",
     "@testing-library/react": "13.1.1",
     "@types/jest": "27.4.1",
     "@types/node": "16.11.7",
