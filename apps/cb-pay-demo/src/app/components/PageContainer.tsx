@@ -7,8 +7,10 @@ export const PageContainer = ({
   children: JSX.Element | JSX.Element[];
 }) => {
   const { maxMobileWidth, isMobile } = useLayoutContext();
+  const style: any = {};
+  if (isMobile) style.maxWidth = maxMobileWidth;
   return (
-    <Container sx={{ maxWidth: isMobile ? maxMobileWidth : '100%' }}>
+    <Container style={style} maxWidth="xl">
       {children}
     </Container>
   );
