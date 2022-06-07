@@ -16,6 +16,8 @@ import {
   InputLabel,
 } from '@mui/material';
 import { PageContainer } from '../components/PageContainer';
+import { CodeCard } from '../components/CodeCard';
+import payBlocks from '../snippets/pay';
 
 const appId = '';
 const destWalletAddr = '';
@@ -113,10 +115,11 @@ const expOptions = [
 
 export const Pay = () => {
   const [experienceType, setExperienceType] = useState<Experience>('embedded');
+
   return (
     <PageContainer>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={4}>
           <Card>
             <CardHeader title="Let's add Pay" />
             <CardContent>
@@ -142,6 +145,9 @@ export const Pay = () => {
               <PayWithCoinbaseButton experience={experienceType} />
             </CardContent>
           </Card>
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <CodeCard blocks={payBlocks} updatePhase={0} />
         </Grid>
       </Grid>
     </PageContainer>
