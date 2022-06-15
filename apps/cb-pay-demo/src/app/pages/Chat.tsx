@@ -15,7 +15,6 @@ import {
   CardContent,
   Button,
   Link,
-  Divider,
   Grid,
   List,
   ListItem,
@@ -28,6 +27,7 @@ import {
 } from '@mui/material';
 import { connect, sendMsg } from '../services/chatWS';
 import { PageContainer } from '../components/PageContainer';
+import { WalletConnectCheck } from '../components/WalletConnectCheck';
 
 type SessionKeyPair = {
   publicKey: Uint8Array;
@@ -50,14 +50,7 @@ type ChatMessage = {
 };
 
 export const Chat = () => {
-  const {
-    publicKey,
-    connected,
-    signMessage,
-    select,
-    connect: walletConnect,
-    connecting,
-  } = useWallet();
+  const { publicKey, connected, signMessage } = useWallet();
   const scrollRef = useRef<HTMLLIElement | null>(null);
   const [alias, setAlias] = useState('');
   const [message, setMessage] = useState('');
@@ -78,15 +71,6 @@ export const Chat = () => {
       scrollRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
-
-  const connectWallet = () => {
-    if (connecting) return;
-    select(PhantomWalletName);
-    walletConnect().catch((err) => {
-      // Silently catch because any errors are caught by the context `onError` handler
-      console.log('error connecting', err);
-    });
-  };
 
   const handleRoomAccess = async () => {
     if (!alias || alias === '' || !publicKey) {
@@ -324,20 +308,7 @@ export const Chat = () => {
                         >
                           Request room access
                         </Button>
-                        {!connected && (
-                          <Typography variant="inherit">
-                            Please{' '}
-                            <Link
-                              component="button"
-                              variant="body2"
-                              color="secondary"
-                              onClick={connectWallet}
-                            >
-                              connect
-                            </Link>{' '}
-                            your wallet
-                          </Typography>
-                        )}
+                        <WalletConnectCheck />
                       </Grid>
                     </Grid>
                   </form>

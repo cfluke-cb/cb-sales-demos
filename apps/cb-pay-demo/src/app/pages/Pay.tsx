@@ -10,29 +10,40 @@ import {
   Divider,
   Grid,
   FormGroup,
-  FormControl,
-  Select,
-  MenuItem,
-  InputLabel,
+  Link,
 } from '@mui/material';
 import { PageContainer } from '../components/PageContainer';
 import { CodeCard } from '../components/CodeCard';
 import payBlocks from '../snippets/pay';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletConnectCheck } from '../components/WalletConnectCheck';
+import { SelectExperience, Experience } from '../components/SelectExperience';
+import {
+  SelectBlockchain,
+  SupportedBlockchains,
+} from '../components/SelectBlockchain';
+import { SelectAssets } from '../components/SelectAsset';
 
-const appId = '';
-const destWalletAddr = '';
+const appId = '4e2c1ceb36';
+const defaultExperience = 'embedded' as Experience;
+const defaultChains = ['solana'] as SupportedBlockchains[];
+const defaultAssets = [] as string[];
 
 interface CBPayInstanceType {
   open: () => void;
   destroy: () => void;
 }
 
-type Experience = 'embedded' | 'popup' | 'new_tab';
-
 export const PayWithCoinbaseButton = ({
   experience,
+  walletAddr,
+  blockchains,
+  assets,
 }: {
   experience: Experience;
+  walletAddr: string;
+  blockchains: SupportedBlockchains[];
+  assets: string[];
 }) => {
   const onrampInstance = useRef<CBPayInstanceType>();
   const [isReady, setIsReady] = useState(false);
@@ -41,16 +52,28 @@ export const PayWithCoinbaseButton = ({
 
   useEffect(() => {
     console.log('initializing');
+    const destinationWallets = [];
+    if (assets.length > 0 && blockchains.length > 0) {
+      destinationWallets.push({
+        address: walletAddr,
+        blockchains,
+        assets,
+      });
+    } else if (assets.length > 0) {
+      destinationWallets.push({
+        address: walletAddr,
+        blockchains,
+      });
+    } else if (blockchains.length > 0) {
+      destinationWallets.push({
+        address: walletAddr,
+        blockchains,
+      });
+    }
     onrampInstance.current = initOnRamp({
       appId,
       widgetParameters: {
-        destinationWallets: [
-          {
-            address: destWalletAddr,
-            blockchains: ['solana'],
-            //assets: ['ETH', 'USDC'],
-          },
-        ],
+        destinationWallets,
       },
       onReady: () => {
         setIsReady(true);
@@ -75,7 +98,7 @@ export const PayWithCoinbaseButton = ({
     return () => {
       onrampInstance.current?.destroy();
     };
-  }, [experience]);
+  }, [experience, walletAddr, assets, blockchains]);
 
   const handleClick = () => {
     console.log(onrampInstance);
@@ -107,14 +130,19 @@ export const PayWithCoinbaseButton = ({
   );
 };
 
-const expOptions = [
-  { label: 'Embedded', value: 'embedded' },
-  { label: 'Pop-up', value: 'popup' },
-  { label: 'New Tab', value: 'new_tab' },
-];
-
 export const Pay = () => {
-  const [experienceType, setExperienceType] = useState<Experience>('embedded');
+  const [experienceType, setExperienceType] =
+    useState<Experience>(defaultExperience);
+  const [selectedBlockchains, setSelectedBlockchains] =
+    useState<SupportedBlockchains[]>(defaultChains);
+  const [selectedAssets, setSelectedAssets] = useState<string[]>(defaultAssets);
+  const { publicKey } = useWallet();
+  const walletAddr = publicKey?.toBase58();
+
+  const handleReset = () => {
+    setSelectedBlockchains(defaultChains);
+    setSelectedAssets(defaultAssets);
+  };
 
   return (
     <PageContainer>
@@ -124,25 +152,40 @@ export const Pay = () => {
             <CardHeader title="Let's add Pay" />
             <CardContent>
               <FormGroup>
-                <FormControl fullWidth>
-                  <InputLabel id="exp-select=label">Experience</InputLabel>
-                  <Select
-                    labelId="exp-select-label"
-                    value={experienceType}
-                    label="Experience"
-                    onChange={(e) =>
-                      setExperienceType(e.target.value as Experience)
-                    }
-                  >
-                    {expOptions.map((c) => (
-                      <MenuItem value={c.value}>{c.label}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <SelectExperience
+                  experience={experienceType}
+                  setExperience={setExperienceType}
+                />
+                <SelectBlockchain
+                  setSelectedBlockchains={setSelectedBlockchains}
+                  selectedBlockchains={selectedBlockchains}
+                />
+                <SelectAssets
+                  selectedAssets={selectedAssets}
+                  setSelectedAssets={setSelectedAssets}
+                />
               </FormGroup>
+              <Typography variant="inherit" sx={{ m: 1 }}>
+                <Link
+                  component="button"
+                  variant="body2"
+                  color="secondary"
+                  onClick={handleReset}
+                >
+                  Reset
+                </Link>
+              </Typography>
               <br />
               <br />
-              <PayWithCoinbaseButton experience={experienceType} />
+              {walletAddr && (
+                <PayWithCoinbaseButton
+                  experience={experienceType}
+                  walletAddr={walletAddr}
+                  blockchains={selectedBlockchains}
+                  assets={selectedAssets}
+                />
+              )}
+              <WalletConnectCheck />
             </CardContent>
           </Card>
         </Grid>
