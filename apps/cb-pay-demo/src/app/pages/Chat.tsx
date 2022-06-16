@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
 import { box, randomBytes, sign } from 'tweetnacl';
 import base58 from 'bs58';
 import {
@@ -14,7 +13,6 @@ import {
   Card,
   CardContent,
   Button,
-  Link,
   Grid,
   List,
   ListItem,

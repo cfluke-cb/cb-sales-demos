@@ -1,21 +1,30 @@
-
-# Use nxgo/cli as the base image to do the build
-FROM nxgo/cli as builder
+FROM node:16.15-alpine as builder
 
 # Create app directory
 WORKDIR /workspace
 
+RUN apk add --update --no-cache git make musl-dev go python3 && ln -sf python3 /usr/bin/python
+
+# Configure Go
+ENV GOROOT /usr/lib/go
+ENV GOPATH /go
+ENV PATH /go/bin:$PATH
+
+RUN mkdir -p ${GOPATH}/src ${GOPATH}/bin
+
+RUN npm i -g nx @nx-go/nx-go
+
 # Copy package.json and the lock file
-COPY package.json /workspace/
+COPY package.json package-lock.json /workspace/
 
 # Install app dependencies
-RUN yarn install --network-timeout 1000000
+RUN npm install
 
 # Copy source files
 COPY . .
 
 # Build apps
-RUN yarn build api
+RUN nx build api --production
 
 # This is the stage where the final production image is built
 FROM golang:1.18.3-alpine as final
@@ -24,11 +33,11 @@ FROM golang:1.18.3-alpine as final
 COPY --from=builder /workspace/dist/apps/api /workspace/api
 
 # Set environment variables
-ENV PORT=8080
+ENV PORT=8443
 ENV HOST=0.0.0.0
 
 # Expose default port
-EXPOSE 8080
+EXPOSE 8443
 
 # Start server
 CMD [ "/workspace/api" ]

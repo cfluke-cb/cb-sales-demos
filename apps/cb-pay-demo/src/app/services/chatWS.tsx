@@ -1,6 +1,11 @@
 // api/index.js
 let socket: WebSocket;
 
+const baseURL =
+  window.location.href.indexOf('localhost') > -1
+    ? 'ws://localhost:8080'
+    : 'wss://api.friendofours.xyz';
+
 const connect = (
   alias: string,
   publicKey: string,
@@ -9,7 +14,7 @@ const connect = (
 ): Promise<WebSocket | Event> => {
   return new Promise((resolve, reject) => {
     const params4 = new URLSearchParams({ alias, publicKey, sig, walletAddr });
-    const connUrl = 'ws://localhost:8080/ws?' + params4.toString();
+    const connUrl = baseURL + '/ws?' + params4.toString();
     console.log('Attempting Connection...', connUrl);
     socket = new WebSocket(connUrl);
 

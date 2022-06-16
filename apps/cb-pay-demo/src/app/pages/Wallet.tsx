@@ -10,6 +10,7 @@ import {
   SelectChangeEvent,
   Stack,
   CardHeader,
+  Button,
 } from '@mui/material';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -20,6 +21,7 @@ import { CodeCard } from '../components/CodeCard';
 import { ConnectBtn } from '../components/ConnectBtn';
 import { AccountInfo } from '../components/AccountInfo';
 import walletBlocks from '../snippets/wallet';
+import { useNavigate } from 'react-router-dom';
 
 const chainOptions = Object.keys(WalletAdapterNetwork)
   .filter((key: string) => isNaN(Number(key)))
@@ -29,13 +31,18 @@ const chainOptions = Object.keys(WalletAdapterNetwork)
   }));
 
 export const Wallet = () => {
+  const navigate = useNavigate();
   const { network, setNetwork } = useContext(NetworkContext);
-  const { disconnect } = useWallet();
+  const { disconnect, connected } = useWallet();
   const [phase, setPhase] = useState(0);
 
   const handleChainChange = (event: SelectChangeEvent) => {
     disconnect();
     setNetwork?.(event.target.value as WalletAdapterNetwork);
+  };
+
+  const handleNavigate = () => {
+    navigate('/chat');
   };
 
   return (
@@ -66,7 +73,14 @@ export const Wallet = () => {
               </FormControl>
               <br />
               <br />
-              <ConnectBtn />
+              <Grid container gap={2} flexDirection="column">
+                <ConnectBtn />
+                {connected && (
+                  <Button variant="contained" onClick={handleNavigate}>
+                    Onward to Chat
+                  </Button>
+                )}
+              </Grid>
             </CardContent>
           </Card>
         </Grid>

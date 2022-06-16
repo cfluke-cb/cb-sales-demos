@@ -28,6 +28,7 @@ const appId = '4e2c1ceb36';
 const defaultExperience = 'embedded' as Experience;
 const defaultChains = ['solana'] as SupportedBlockchains[];
 const defaultAssets = [] as string[];
+const devMode = localStorage.getItem('devMode') === 'true';
 
 interface CBPayInstanceType {
   open: () => void;
@@ -156,25 +157,30 @@ export const Pay = () => {
                   experience={experienceType}
                   setExperience={setExperienceType}
                 />
-                <SelectBlockchain
-                  setSelectedBlockchains={setSelectedBlockchains}
-                  selectedBlockchains={selectedBlockchains}
-                />
-                <SelectAssets
-                  selectedAssets={selectedAssets}
-                  setSelectedAssets={setSelectedAssets}
-                />
+                {devMode && (
+                  <>
+                    <SelectBlockchain
+                      setSelectedBlockchains={setSelectedBlockchains}
+                      selectedBlockchains={selectedBlockchains}
+                    />
+                    <SelectAssets
+                      selectedAssets={selectedAssets}
+                      setSelectedAssets={setSelectedAssets}
+                    />
+                    <Typography variant="inherit" sx={{ m: 1 }}>
+                      <Link
+                        component="button"
+                        variant="body2"
+                        color="secondary"
+                        onClick={handleReset}
+                      >
+                        Reset
+                      </Link>
+                    </Typography>
+                  </>
+                )}
               </FormGroup>
-              <Typography variant="inherit" sx={{ m: 1 }}>
-                <Link
-                  component="button"
-                  variant="body2"
-                  color="secondary"
-                  onClick={handleReset}
-                >
-                  Reset
-                </Link>
-              </Typography>
+
               <br />
               <br />
               {walletAddr && (
