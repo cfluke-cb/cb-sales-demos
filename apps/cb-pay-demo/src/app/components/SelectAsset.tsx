@@ -9,6 +9,8 @@ const assetOptions = [
   { label: 'DAI', value: 'DAI' },
   { label: 'Decentraland MANA', value: 'MANA' },
   { label: 'Uniswap UNI', value: 'UNI' },
+  { label: 'The Sandbox SAND', value: 'SAND' },
+  { label: 'Orca ORCA', value: 'ORCA' },
 ];
 
 export const SelectAssets = ({
