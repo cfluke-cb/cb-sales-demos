@@ -24,7 +24,8 @@ import {
 } from '../components/SelectBlockchain';
 import { SelectAssets } from '../components/SelectAsset';
 
-const appId = '4e2c1ceb36';
+const appId = '%NX_CBPAY_APPID%';
+const ethWalletAddr = '0x01658f5d899e03492dC832C8eE8839FFD80b7f09';
 const defaultExperience = 'embedded' as Experience;
 const defaultChains = ['solana'] as SupportedBlockchains[];
 const defaultAssets = [] as string[];
@@ -61,10 +62,17 @@ export const PayWithCoinbaseButton = ({
         assets,
       });
     } else if (assets.length > 0) {
-      destinationWallets.push({
-        address: walletAddr,
-        blockchains,
-      });
+      if (assets.indexOf('usdc') > -1 || assets.indexOf('eth') > -1) {
+        destinationWallets.push({
+          address: ethWalletAddr,
+          assets,
+        });
+      } else {
+        destinationWallets.push({
+          address: walletAddr,
+          assets,
+        });
+      }
     } else if (blockchains.length > 0) {
       destinationWallets.push({
         address: walletAddr,

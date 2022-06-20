@@ -66,7 +66,7 @@ update-friendofours-service:
 
 .PHONY: update-friendofours-web
 update-friendofours-web:
-	@npm run clean
+	@npm run clean || true
 	@nx build cb-pay-demo --production
 	@aws s3 \
   --profile $(PROFILE) \

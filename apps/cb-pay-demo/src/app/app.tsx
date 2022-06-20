@@ -1,7 +1,6 @@
 import { createTheme, ThemeProvider } from '@mui/material';
+import { WalletProvider } from '@cb-sales-demos/sol-wallet';
 import { Router } from './routes';
-import { Context as WalletProvider } from './context/walletProvider';
-import { NetworkContextProvider } from './context/networkProvider';
 
 const mdTheme = createTheme({
   palette: {
@@ -39,11 +38,9 @@ const mdTheme = createTheme({
 export function App() {
   return (
     <ThemeProvider theme={mdTheme}>
-      <NetworkContextProvider>
-        <WalletProvider>
-          <Router />
-        </WalletProvider>
-      </NetworkContextProvider>
+      <WalletProvider>
+        <Router />
+      </WalletProvider>
     </ThemeProvider>
   );
 }

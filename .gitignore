@@ -40,3 +40,5 @@ Thumbs.db
 
 server.crt
 server.key
+.env
+local.env

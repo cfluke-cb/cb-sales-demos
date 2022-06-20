@@ -4,6 +4,7 @@
   "projects": {
     "api": "apps/api",
     "cb-pay-demo": "apps/cb-pay-demo",
-    "cb-pay-demo-e2e": "apps/cb-pay-demo-e2e"
+    "cb-pay-demo-e2e": "apps/cb-pay-demo-e2e",
+    "sol-wallet": "libs/sol-wallet"
   }
 }

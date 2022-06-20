@@ -70,7 +70,8 @@ export const Chat = () => {
     }
   }, [messages]);
 
-  const handleRoomAccess = async () => {
+  const handleRoomAccess = async (e: React.SyntheticEvent) => {
+    if (e?.preventDefault) e.preventDefault();
     if (!alias || alias === '' || !publicKey) {
       console.warn('no alias set');
       return;

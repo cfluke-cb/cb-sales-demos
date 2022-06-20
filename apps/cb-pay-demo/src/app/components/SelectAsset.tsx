@@ -11,6 +11,9 @@ const assetOptions = [
   { label: 'Uniswap UNI', value: 'UNI' },
   { label: 'The Sandbox SAND', value: 'SAND' },
   { label: 'Orca ORCA', value: 'ORCA' },
+  { label: 'Stepn GMT', value: 'GMT' },
+  { label: 'Bonfida FIDA', value: 'FIDA' },
+  { label: 'Ethereum Name Service ENS', value: 'ENS' },
 ];
 
 export const SelectAssets = ({
