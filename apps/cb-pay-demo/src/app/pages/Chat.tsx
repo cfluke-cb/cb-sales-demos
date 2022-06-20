@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from '@cb-sales-demos/sol-wallet';
 import { box, randomBytes, sign } from 'tweetnacl';
 import base58 from 'bs58';
 import {

@@ -24,6 +24,4 @@ const NetworkContextProvider = ({ children }: { children: JSX.Element }) => {
   );
 };
 
-export default NetworkContext;
-
-export { NetworkContextProvider };
+export { NetworkContextProvider, NetworkContext };

@@ -12,10 +12,11 @@ import {
   FormGroup,
   Link,
 } from '@mui/material';
+import { useWallet } from '@cb-sales-demos/sol-wallet';
+
 import { PageContainer } from '../components/PageContainer';
 import { CodeCard } from '../components/CodeCard';
 import payBlocks from '../snippets/pay';
-import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletConnectCheck } from '../components/WalletConnectCheck';
 import { SelectExperience, Experience } from '../components/SelectExperience';
 import {

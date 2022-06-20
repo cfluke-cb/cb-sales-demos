@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from '@cb-sales-demos/sol-wallet';
 
 export function WalletStatus({ onClick }: { onClick: (i: number) => void }) {
   const { connected, connecting, disconnecting } = useWallet();

@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from 'react';
 import { Outlet, useNavigate, useOutletContext } from 'react-router-dom';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from '@cb-sales-demos/sol-wallet';
 import {
   Box,
   Toolbar,

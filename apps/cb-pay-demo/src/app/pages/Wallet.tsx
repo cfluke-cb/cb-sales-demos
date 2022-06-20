@@ -12,11 +12,10 @@ import {
   CardHeader,
   Button,
 } from '@mui/material';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet, WalletAdapterNetwork } from '@cb-sales-demos/sol-wallet';
+import { NetworkContext } from '@cb-sales-demos/sol-wallet';
 import { PageContainer } from '../components/PageContainer';
 import { WalletStatus } from '../components/WalletStatus';
-import NetworkContext from '../context/networkProvider';
 import { CodeCard } from '../components/CodeCard';
 import { ConnectBtn } from '../components/ConnectBtn';
 import { AccountInfo } from '../components/AccountInfo';
@@ -33,11 +32,11 @@ const chainOptions = Object.keys(WalletAdapterNetwork)
 export const Wallet = () => {
   const navigate = useNavigate();
   const { network, setNetwork } = useContext(NetworkContext);
-  const { disconnect, connected } = useWallet();
+  const { disconnectWallet, connected } = useWallet();
   const [phase, setPhase] = useState(0);
 
   const handleChainChange = (event: SelectChangeEvent) => {
-    disconnect();
+    disconnectWallet();
     setNetwork?.(event.target.value as WalletAdapterNetwork);
   };
 

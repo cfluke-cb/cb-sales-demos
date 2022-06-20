@@ -1,32 +1,19 @@
 import { Button } from '@mui/material';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
+import { useWallet } from '@cb-sales-demos/sol-wallet';
 
 export const ConnectBtn = () => {
-  const { connection } = useConnection();
-  const { select, connect, disconnect, connecting, connected, disconnecting } =
-    useWallet();
-
-  const handleWalletConnect = () => {
-    console.log('attempting connect', connection, connecting, connected);
-    if (connecting || connected) return;
-    select(PhantomWalletName);
-    connect().catch((err) => {
-      // Silently catch because any errors are caught by the context `onError` handler
-      console.log('error connecting', err);
-    });
-  };
-
-  const handleWalletDisconnect = () => {
-    console.log('attempting disconnect');
-    if (disconnecting) return;
-    disconnect();
-  };
+  const {
+    connectWallet,
+    disconnectWallet,
+    connecting,
+    connected,
+    disconnecting,
+  } = useWallet();
 
   return connected ? (
     <Button
       variant="contained"
-      onClick={handleWalletDisconnect}
+      onClick={disconnectWallet}
       disabled={disconnecting}
     >
       Disconnect
@@ -34,7 +21,7 @@ export const ConnectBtn = () => {
   ) : (
     <Button
       variant="contained"
-      onClick={handleWalletConnect}
+      onClick={connectWallet}
       disabled={connecting || connected}
     >
       Connect

@@ -1,19 +1,8 @@
-import { useWallet } from '@solana/wallet-adapter-react';
-import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
 import { Typography, Link } from '@mui/material';
+import { useWallet } from '@cb-sales-demos/sol-wallet';
 
 export const WalletConnectCheck = () => {
-  const { connected, connecting, select, connect } = useWallet();
-
-  const connectWallet = () => {
-    if (connecting) return;
-    select(PhantomWalletName);
-    connect().catch((err) => {
-      // Silently catch because any errors are caught by the context `onError` handler
-      console.log('error connecting', err);
-    });
-  };
-
+  const { connected, connecting, connectWallet } = useWallet();
   if (connected || connecting) return <></>;
   return (
     <Typography variant="inherit">
