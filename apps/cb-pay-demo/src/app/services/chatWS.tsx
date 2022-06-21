@@ -3,7 +3,7 @@ let socket: WebSocket;
 
 const baseURL =
   window.location.href.indexOf('localhost') > -1
-    ? 'ws://localhost:8443'
+    ? 'wss://localhost:8443'
     : 'wss://api.friendofours.xyz';
 
 const connect = (

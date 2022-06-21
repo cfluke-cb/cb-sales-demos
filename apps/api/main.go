@@ -70,7 +70,7 @@ func main() {
 	fmt.Println(fmt.Sprintf("starting listener on: %s", port))
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
-	originsOk := handlers.AllowedOrigins([]string{"https://app.friendofours.xyz"})
+	originsOk := handlers.AllowedOrigins([]string{"https://app.friendofours.xyz", "https://localhost:8443"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	srv := &http.Server{
