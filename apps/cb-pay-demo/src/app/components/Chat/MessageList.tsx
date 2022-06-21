@@ -22,7 +22,7 @@ export const MessageList = () => {
     }
   }, [messages]);
 
-  if (!sessionConnected) return <></>;
+  if (!sessionConnected) return null;
   return (
     <>
       <MembersRow />

@@ -1,9 +1,15 @@
 import { Typography, Link } from '@mui/material';
 import { useWallet } from '@cb-sales-demos/sol-wallet';
+import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
 
 export const WalletConnectCheck = () => {
   const { connected, connecting, connectWallet } = useWallet();
-  if (connected || connecting) return <></>;
+
+  const handleConnectWallet = () => {
+    connectWallet(PhantomWalletName);
+  };
+
+  if (connected || connecting) return null;
   return (
     <Typography variant="inherit">
       Please{' '}
@@ -11,7 +17,7 @@ export const WalletConnectCheck = () => {
         component="button"
         variant="body2"
         color="secondary"
-        onClick={connectWallet}
+        onClick={handleConnectWallet}
       >
         connect
       </Link>{' '}

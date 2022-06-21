@@ -115,6 +115,22 @@ const ChatContextProvider = ({
     }
   }, [inboundMessage, sessionKeyPair, members]);
 
+  const isValidSig = (msg: ChatMember) => {
+    let validSig = false;
+    try {
+      const signedMessage = decodeUTF8(msg.walletAddr + ':' + msg.alias);
+      validSig = sign.detached.verify(
+        signedMessage,
+        msg.sig,
+        base58.decode(msg.walletAddr)
+      );
+      console.log('valid sig?', validSig, signedMessage);
+    } catch (err) {
+      console.log('issue validating sig', err);
+    }
+    return validSig;
+  };
+
   const connect = async (name: string) => {
     if (!name || name === '' || !publicKey) {
       console.warn('no alias set');
@@ -203,22 +219,6 @@ const ChatContextProvider = ({
       console.error('error connecting to websocket', err);
       setSessionConnected(false);
     }
-  };
-
-  const isValidSig = (msg: ChatMember) => {
-    let validSig = false;
-    try {
-      const signedMessage = decodeUTF8(msg.walletAddr + ':' + msg.alias);
-      validSig = sign.detached.verify(
-        signedMessage,
-        msg.sig,
-        base58.decode(msg.walletAddr)
-      );
-      console.log('valid sig?', validSig, signedMessage);
-    } catch (err) {
-      console.log('issue validating sig', err);
-    }
-    return validSig;
   };
 
   const sendMessage = (message: string) => {

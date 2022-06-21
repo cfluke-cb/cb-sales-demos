@@ -5,6 +5,7 @@
     "api": "apps/api",
     "cb-pay-demo": "apps/cb-pay-demo",
     "cb-pay-demo-e2e": "apps/cb-pay-demo-e2e",
-    "sol-wallet": "libs/sol-wallet"
+    "sol-wallet": "libs/sol-wallet",
+    "wallet-eth": "libs/wallet-eth"
   }
 }

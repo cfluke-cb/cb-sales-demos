@@ -14,7 +14,7 @@ export const RoomConnect = () => {
     connect?.(name);
   };
 
-  if (sessionConnected) return <></>;
+  if (sessionConnected) return null;
 
   return (
     <form onSubmit={handleRoomAccess}>

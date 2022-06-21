@@ -1,12 +1,21 @@
 import { useWallet as useSolWallet } from '@solana/wallet-adapter-react';
-import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
+import { WalletName } from '@solana/wallet-adapter-base';
 
 export const useWallet = () => {
-  const { publicKey, connected, connecting, disconnecting, select, connect, disconnect, signMessage } = useSolWallet();
+  const {
+    publicKey,
+    connected,
+    connecting,
+    disconnecting,
+    select,
+    connect,
+    disconnect,
+    signMessage,
+  } = useSolWallet();
 
-  const connectWallet = () => {
+  const connectWallet = (name: WalletName) => {
     if (connecting) return;
-    select(PhantomWalletName);
+    select(name);
     connect().catch((err) => {
       // Silently catch because any errors are caught by the context `onError` handler
       console.log('error connecting', err);
@@ -19,5 +28,14 @@ export const useWallet = () => {
     disconnect();
   };
 
-  return { publicKey, connected, connecting, disconnecting, connectWallet, disconnectWallet, signMessage };
+  return {
+    publicKey,
+    connected,
+    connecting,
+    disconnecting,
+    connectWallet,
+    disconnectWallet,
+    select,
+    signMessage,
+  };
 };

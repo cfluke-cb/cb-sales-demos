@@ -1,5 +1,6 @@
 import { Button } from '@mui/material';
 import { useWallet } from '@cb-sales-demos/sol-wallet';
+import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
 
 export const ConnectBtn = () => {
   const {
@@ -9,6 +10,10 @@ export const ConnectBtn = () => {
     connected,
     disconnecting,
   } = useWallet();
+
+  const handleConnectWallet = () => {
+    connectWallet(PhantomWalletName);
+  };
 
   return connected ? (
     <Button
@@ -21,7 +26,7 @@ export const ConnectBtn = () => {
   ) : (
     <Button
       variant="contained"
-      onClick={connectWallet}
+      onClick={handleConnectWallet}
       disabled={connecting || connected}
     >
       Connect

@@ -16,7 +16,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@cb-sales-demos/sol-wallet": ["libs/sol-wallet/src/index.ts"]
+      "@cb-sales-demos/sol-wallet": ["libs/sol-wallet/src/index.ts"],
+      "@cb-sales-demos/wallet-eth": ["libs/wallet-eth/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
