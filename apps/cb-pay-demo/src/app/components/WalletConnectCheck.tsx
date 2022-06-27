@@ -1,5 +1,5 @@
 import { Typography, Link } from '@mui/material';
-import { useWallet } from '@cb-sales-demos/sol-wallet';
+import { useWallet } from '@cb-sales-demos/wallet-sol';
 import { PhantomWalletName } from '@solana/wallet-adapter-phantom';
 
 export const WalletConnectCheck = () => {

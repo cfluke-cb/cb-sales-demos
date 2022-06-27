@@ -25,7 +25,14 @@ export const MembersRow = () => {
               </div>
             }
           >
-            <Avatar key={'av-member-' + i}>
+            <Avatar
+              key={'av-member-' + i}
+              src={
+                m?.nftCollection?.[0]?.file_url
+                  ? m.nftCollection[0].file_url
+                  : null
+              }
+            >
               {m.alias.slice(0, 1).toUpperCase()}
             </Avatar>
           </Tooltip>

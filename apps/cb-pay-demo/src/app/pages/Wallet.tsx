@@ -12,13 +12,13 @@ import {
   CardHeader,
   Button,
 } from '@mui/material';
-import { useWallet, WalletAdapterNetwork } from '@cb-sales-demos/sol-wallet';
-import { NetworkContext } from '@cb-sales-demos/sol-wallet';
+import { useWallet, WalletAdapterNetwork } from '@cb-sales-demos/wallet-sol';
+import { NetworkContext } from '@cb-sales-demos/wallet-sol';
 import { PageContainer } from '../components/PageContainer';
-import { WalletStatus } from '../components/WalletStatus';
+import { WalletStatus } from '../components/Wallet/WalletStatus';
 import { CodeCard } from '../components/CodeCard';
-import { ConnectBtn } from '../components/ConnectBtn';
-import { AccountInfo } from '../components/AccountInfo';
+import { ConnectBtn } from '../components/Wallet/ConnectBtn';
+import { AccountInfo } from '../components/Wallet/AccountInfo';
 import walletBlocks from '../snippets/wallet';
 import { useNavigate } from 'react-router-dom';
 

@@ -22,7 +22,7 @@ export const Home = () => {
         <Grid item xs={12} md={4}>
           <Card>
             <CardHeader
-              title="Welcome NFT NYC"
+              title="Welcome Launch House"
               subtitle="Let's Connect our Wallet and Chat"
             />
             <CardContent

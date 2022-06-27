@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { useGetAccountInfo } from '@cb-sales-demos/sol-wallet';
+import { useGetAccountInfo } from '@cb-sales-demos/wallet-sol';
 
 export const AccountInfo = ({ onClick }: { onClick: (i: number) => void }) => {
   const { account, walletAddress } = useGetAccountInfo();

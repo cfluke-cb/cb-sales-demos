@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { useWallet } from '@cb-sales-demos/sol-wallet';
+import { useWallet } from '@cb-sales-demos/wallet-sol';
 
 export function WalletStatus({ onClick }: { onClick: (i: number) => void }) {
   const { connected, connecting, disconnecting } = useWallet();

@@ -12,20 +12,23 @@ import {
   FormGroup,
   Link,
 } from '@mui/material';
-import { useWallet } from '@cb-sales-demos/sol-wallet';
+import { useWallet } from '@cb-sales-demos/wallet-sol';
 
 import { PageContainer } from '../components/PageContainer';
 import { CodeCard } from '../components/CodeCard';
 import payBlocks from '../snippets/pay';
 import { WalletConnectCheck } from '../components/WalletConnectCheck';
-import { SelectExperience, Experience } from '../components/SelectExperience';
+import {
+  SelectExperience,
+  Experience,
+} from '../components/Pay/SelectExperience';
 import {
   SelectBlockchain,
   SupportedBlockchains,
-} from '../components/SelectBlockchain';
-import { SelectAssets } from '../components/SelectAsset';
+} from '../components/Pay/SelectBlockchain';
+import { SelectAssets } from '../components/Pay/SelectAsset';
 
-const appId = '%NX_CBPAY_APPID%';
+const appId = '39c3d7f8-c205-463b-a54b-4279a5069577'; //process.env['CBPAY_APPID'];
 const ethWalletAddr = '0x01658f5d899e03492dC832C8eE8839FFD80b7f09';
 const defaultExperience = 'embedded' as Experience;
 const defaultChains = ['solana'] as SupportedBlockchains[];
@@ -57,13 +60,21 @@ export const PayWithCoinbaseButton = ({
     console.log('initializing');
     const destinationWallets = [];
     if (assets.length > 0 && blockchains.length > 0) {
-      destinationWallets.push({
-        address: walletAddr,
-        blockchains,
-        assets,
-      });
+      if (blockchains.indexOf('ethereum') > -1) {
+        destinationWallets.push({
+          address: ethWalletAddr,
+          blockchains,
+          assets,
+        });
+      } else {
+        destinationWallets.push({
+          address: walletAddr,
+          blockchains,
+          assets,
+        });
+      }
     } else if (assets.length > 0) {
-      if (assets.indexOf('usdc') > -1 || assets.indexOf('eth') > -1) {
+      if (assets.indexOf('USDC') > -1 || assets.indexOf('ETH') > -1) {
         destinationWallets.push({
           address: ethWalletAddr,
           assets,

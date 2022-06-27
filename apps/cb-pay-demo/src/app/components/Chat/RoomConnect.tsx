@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { ChatContext } from '../../context/ChatContext';
 import { Grid, TextField, Button } from '@mui/material';
 import { WalletConnectCheck } from '../WalletConnectCheck';
-import { useWallet } from '@cb-sales-demos/sol-wallet';
+import { useWallet } from '@cb-sales-demos/wallet-sol';
 
 export const RoomConnect = () => {
   const { connected } = useWallet();

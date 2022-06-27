@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import { useWallet } from '@cb-sales-demos/sol-wallet';
+import { useWallet } from '@cb-sales-demos/wallet-sol';
 import { box, randomBytes, sign } from 'tweetnacl';
 import base58 from 'bs58';
 import {
@@ -21,6 +21,7 @@ type ChatMember = {
   walletAddr: string;
   sig: Uint8Array;
   validSig: boolean;
+  nftCollection: any;
 };
 
 type ChatMessage = {
@@ -175,6 +176,7 @@ const ChatContextProvider = ({
                 walletAddr: mem.walletAddr,
                 sig: base58.decode(mem.sig),
                 validSig: false,
+                nftCollection: mem.nftCollection,
               };
               m.validSig = isValidSig(m);
               console.log('mem', mem, m);
@@ -194,6 +196,7 @@ const ChatContextProvider = ({
                 walletAddr: msg.walletAddr,
                 sig: base58.decode(msg.sig),
                 validSig: false,
+                nftCollection: msg.nftCollection,
               };
               newMember.validSig = isValidSig(newMember);
               console.log('added new member', newMember);

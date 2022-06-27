@@ -1,10 +1,10 @@
 /* eslint-disable */
 export default {
-  displayName: 'sol-wallet',
+  displayName: 'wallet-sol',
   preset: '../../jest.preset.js',
   transform: {
     '^.+\\.[tj]sx?$': 'babel-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/libs/sol-wallet',
+  coverageDirectory: '../../coverage/libs/wallet-sol',
 };

@@ -1,5 +1,5 @@
 import { createTheme, ThemeProvider } from '@mui/material';
-import { WalletProvider } from '@cb-sales-demos/sol-wallet';
+import { WalletProvider } from '@cb-sales-demos/wallet-sol';
 import { Router } from './routes';
 import { ChatContextProvider } from './context/ChatContext';
 
