@@ -5,6 +5,9 @@ ARG CACHEBUST=1
 RUN mkdir -p /build
 WORKDIR /build
 COPY *.go .
+COPY pkg/config/*.go pkg/config/
+COPY pkg/nft/*.go pkg/nft/
+COPY pkg/websocket/*.go pkg/websocket/
 COPY go.mod .
 COPY go.sum .
 
@@ -21,11 +24,11 @@ RUN openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650 -s
 FROM scratch as final
 
 # Copy over artifacts from builder image
-COPY --from=builder /workspace/dist/apps/api /main
+COPY --from=builder /build/main /main
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/ssl/certs /etc/ssl/certs
-COPY --from=builder /workspace/server.crt /server.crt
-COPY --from=builder /workspace/server.key /server.key
+COPY --from=builder /build/server.crt /server.crt
+COPY --from=builder /build/server.key /server.key
 
 # Set environment variables
 ENV PORT=8443
@@ -36,4 +39,4 @@ EXPOSE 8443
 
 
 # Start server
-CMD [ "/main" ]
+CMD [ "/main -prod" ]

@@ -11,6 +11,8 @@ import {
   Grid,
   FormGroup,
   Link,
+  TextField,
+  FormControl,
 } from '@mui/material';
 import { useWallet } from '@cb-sales-demos/wallet-sol';
 
@@ -45,11 +47,21 @@ export const PayWithCoinbaseButton = ({
   walletAddr,
   blockchains,
   assets,
+  presetCrypto,
+  presetFiat,
+  handleOpen,
+  handleExit,
+  isOpen,
 }: {
   experience: Experience;
   walletAddr: string;
   blockchains: SupportedBlockchains[];
   assets: string[];
+  presetCrypto: number;
+  presetFiat: number;
+  handleOpen: () => void;
+  handleExit: () => void;
+  isOpen: boolean;
 }) => {
   const onrampInstance = useRef<CBPayInstanceType>();
   const [isReady, setIsReady] = useState(false);
@@ -91,22 +103,30 @@ export const PayWithCoinbaseButton = ({
         blockchains,
       });
     }
+
+    const widgetParameters = {
+      destinationWallets,
+      presetCryptoAmount: presetCrypto !== 0 ? presetCrypto : null,
+      presetFiatAmount: presetFiat !== 0 ? presetFiat : null,
+    };
+
     onrampInstance.current = initOnRamp({
       appId,
-      widgetParameters: {
-        destinationWallets,
-      },
+      widgetParameters,
       onReady: () => {
         setIsReady(true);
       },
       onSuccess: () => {
         console.log('success');
+        handleExit();
       },
       onExit: (event: any) => {
         console.log('exit', event);
         if (event?.error) setError(event.error);
+        handleExit();
       },
       onEvent: (event: any) => {
+        if (!isOpen && event?.eventName !== 'exit') handleOpen();
         console.log('event', event);
         setEvents((events) => [...events, event]);
       },
@@ -152,17 +172,29 @@ export const PayWithCoinbaseButton = ({
 };
 
 export const Pay = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const [experienceType, setExperienceType] =
     useState<Experience>(defaultExperience);
   const [selectedBlockchains, setSelectedBlockchains] =
     useState<SupportedBlockchains[]>(defaultChains);
   const [selectedAssets, setSelectedAssets] = useState<string[]>(defaultAssets);
+  const [presetCrypto, setPresetCrypto] = useState(0);
+  const [presetFiat, setPresetFiat] = useState(0);
   const { publicKey } = useWallet();
   const walletAddr = publicKey?.toBase58();
 
   const handleReset = () => {
     setSelectedBlockchains(defaultChains);
     setSelectedAssets(defaultAssets);
+    setIsOpen(false);
+  };
+
+  const handleOpen = () => {
+    setIsOpen(true);
+  };
+
+  const handleExit = () => {
+    setIsOpen(false);
   };
 
   return (
@@ -173,32 +205,56 @@ export const Pay = () => {
             <CardHeader title="Let's add Pay" />
             <CardContent>
               <FormGroup>
-                <SelectExperience
-                  experience={experienceType}
-                  setExperience={setExperienceType}
-                />
-                {devMode && (
+                {!isOpen ? (
                   <>
-                    <SelectBlockchain
-                      setSelectedBlockchains={setSelectedBlockchains}
-                      selectedBlockchains={selectedBlockchains}
+                    <SelectExperience
+                      experience={experienceType}
+                      setExperience={setExperienceType}
                     />
-                    <SelectAssets
-                      selectedAssets={selectedAssets}
-                      setSelectedAssets={setSelectedAssets}
-                    />
-                    <Typography variant="inherit" sx={{ m: 1 }}>
-                      <Link
-                        component="button"
-                        variant="body2"
-                        color="secondary"
-                        onClick={handleReset}
-                      >
-                        Reset
-                      </Link>
-                    </Typography>
+                    {devMode && (
+                      <>
+                        <SelectBlockchain
+                          setSelectedBlockchains={setSelectedBlockchains}
+                          selectedBlockchains={selectedBlockchains}
+                        />
+                        <SelectAssets
+                          selectedAssets={selectedAssets}
+                          setSelectedAssets={setSelectedAssets}
+                        />
+                        <FormControl fullWidth sx={{ m: 1 }}>
+                          <TextField
+                            type="number"
+                            label="Preset Crypto"
+                            value={presetCrypto}
+                            onChange={(e) =>
+                              setPresetCrypto(Number(e.target.value))
+                            }
+                          />
+                        </FormControl>
+                        <FormControl fullWidth sx={{ m: 1 }}>
+                          <TextField
+                            type="number"
+                            label="Preset Fiat"
+                            value={presetFiat}
+                            onChange={(e) =>
+                              setPresetFiat(Number(e.target.value))
+                            }
+                          />
+                        </FormControl>
+                        <Typography variant="inherit" sx={{ m: 1 }}>
+                          <Link
+                            component="button"
+                            variant="body2"
+                            color="secondary"
+                            onClick={handleReset}
+                          >
+                            Reset
+                          </Link>
+                        </Typography>
+                      </>
+                    )}
                   </>
-                )}
+                ) : null}
               </FormGroup>
 
               <br />
@@ -209,6 +265,11 @@ export const Pay = () => {
                   walletAddr={walletAddr}
                   blockchains={selectedBlockchains}
                   assets={selectedAssets}
+                  presetCrypto={presetCrypto}
+                  presetFiat={presetFiat}
+                  handleOpen={handleOpen}
+                  handleExit={handleExit}
+                  isOpen={isOpen}
                 />
               )}
               <WalletConnectCheck />

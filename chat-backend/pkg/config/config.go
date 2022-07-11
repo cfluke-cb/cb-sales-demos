@@ -8,8 +8,8 @@ import (
 )
 
 type AppConfig struct {
-	NftPortKey       string `mapstructure:"NFT_PORT_KEY"`
-	InfoLog         *log.Logger
+	NftPortKey string `mapstructure:"NFT_PORT_KEY"`
+	InfoLog    *log.Logger
 }
 
 func Setup(app *AppConfig) {
@@ -21,11 +21,11 @@ func Setup(app *AppConfig) {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Sprintf("Missing env file %v", err))
+		fmt.Printf("Missing env file %v\n", err)
 	}
 
 	err = viper.Unmarshal(&app)
 	if err != nil {
-		panic(fmt.Sprintf("Missing env file %v", err))
+		fmt.Printf("Cannot parse env file %v\n", err)
 	}
 }

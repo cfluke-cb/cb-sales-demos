@@ -54,7 +54,7 @@ update-friendofours-service:
   --profile $(PROFILE) \
   --region $(REGION) \
 	| docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
-	@docker build --platform linux/amd64 -t $(FRIENDOFOURS_SVC) .
+	@docker build --platform linux/amd64 -t $(FRIENDOFOURS_SVC) --file chat-backend/Dockerfile chat-backend/.
 	@docker tag $(FRIENDOFOURS_SVC):latest $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(FRIENDOFOURS_SVC):latest
 	@docker push $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com/$(FRIENDOFOURS_SVC):latest
 	@aws ecs update-service \

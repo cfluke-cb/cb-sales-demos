@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -9,11 +11,10 @@ import (
 	"os"
 	"os/signal"
 	"time"
-	"encoding/json"
 
+	"github.com/cfluke-cb/cb-sales-demos/chat-backend/pkg/config"
 	"github.com/cfluke-cb/cb-sales-demos/chat-backend/pkg/nft"
 	"github.com/cfluke-cb/cb-sales-demos/chat-backend/pkg/websocket"
-	"github.com/cfluke-cb/cb-sales-demos/chat-backend/pkg/config"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
@@ -32,7 +33,7 @@ func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintf(w, "%+v\n", err)
 	} else {
-		fmt.Println("%+v", body)
+		fmt.Printf("%+v\n", body)
 	}
 
 	conn, err := websocket.Upgrade(w, r)
@@ -47,7 +48,7 @@ func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
 		AliasSignature: query.Get("sig"),
 		WalletAddress:  query.Get("walletAddr"),
 		PublicKey:      query.Get("publicKey"),
-		NftCollection:	body,
+		NftCollection:  body,
 	}
 
 	pool.Register <- client
@@ -103,10 +104,10 @@ func main() {
 		port = os.Getenv("PORT")
 	}
 
-	fmt.Println(fmt.Sprintf("starting listener on: %s", port))
+	fmt.Printf("starting listener on: %s\n", port)
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
-	originsOk := handlers.AllowedOrigins([]string{"https://app.friendofours.xyz", "https://localhost:8443"})
+	originsOk := handlers.AllowedOrigins([]string{"https://app.friendofours.xyz", "https://localhost:8443", "http://localhost:8443"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	srv := &http.Server{
@@ -117,9 +118,19 @@ func main() {
 	}
 
 	go func() {
-		//if err := srv.ListenAndServeTLS("server.crt", "server.key"); err != nil {
-		if err := srv.ListenAndServe(); err != nil {
-			log.Fatal("ListenAndServe: ", err)
+		prod := flag.Bool("prod", false, "a bool")
+		flag.Parse()
+
+		if *prod {
+			if err := srv.ListenAndServeTLS("server.crt", "server.key"); err != nil {
+				//if err := srv.ListenAndServe(); err != nil {
+				log.Fatal("ListenAndServe: ", err)
+			}
+		} else {
+			if err := srv.ListenAndServe(); err != nil {
+				//if err := srv.ListenAndServe(); err != nil {
+				log.Fatal("ListenAndServe: ", err)
+			}
 		}
 	}()
 
