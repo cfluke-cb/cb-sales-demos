@@ -17,7 +17,9 @@
     "baseUrl": ".",
     "paths": {
       "@cb-sales-demos/wallet-sol": ["libs/wallet-sol/src/index.ts"],
-      "@cb-sales-demos/wallet-eth": ["libs/wallet-eth/src/index.ts"]
+      "@cb-sales-demos/wallet-eth": ["libs/wallet-eth/src/index.ts"],
+      "crypto": ["node_modules/crypto-browserify"],
+      "stream": ["node_modules/stream-browserify"]
     }
   },
   "exclude": ["node_modules", "tmp"]

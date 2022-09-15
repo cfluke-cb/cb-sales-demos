@@ -1,5 +1,5 @@
-export { NetworkContext } from './lib/context/networkProvider'
+export { NetworkContext } from './lib/context/networkProvider';
 
 export * from './lib/WalletProvider';
-export * from './lib/hooks'
-export { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+export * from './lib/hooks';
+export { WalletAdapterNetwork, WalletName } from '@solana/wallet-adapter-base';

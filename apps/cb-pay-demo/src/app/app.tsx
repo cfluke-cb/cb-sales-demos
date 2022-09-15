@@ -2,6 +2,10 @@ import { createTheme, ThemeProvider } from '@mui/material';
 import { WalletProvider } from '@cb-sales-demos/wallet-sol';
 import { Router } from './routes';
 import { ChatContextProvider } from './context/ChatContext';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
+import { CoinbaseWalletAdapter } from '@solana/wallet-adapter-wallets';
+
+const walletList = [PhantomWalletAdapter, CoinbaseWalletAdapter];
 
 const mdTheme = createTheme({
   palette: {
@@ -39,7 +43,7 @@ const mdTheme = createTheme({
 export function App() {
   return (
     <ThemeProvider theme={mdTheme}>
-      <WalletProvider>
+      <WalletProvider walletList={walletList}>
         <ChatContextProvider>
           <Router />
         </ChatContextProvider>

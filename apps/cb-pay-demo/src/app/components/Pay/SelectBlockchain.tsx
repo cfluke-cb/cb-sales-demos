@@ -17,6 +17,7 @@ export type SupportedBlockchains =
   | 'horizen'
   | 'litecoin'
   | 'polkadot'
+  | 'polygon'
   | 'solana'
   | 'stellar'
   | 'tezos'
@@ -37,9 +38,11 @@ const blockchainOptions = [
   { label: 'Ethereum', value: 'ethereum' },
   { label: 'Ethereum Classic', value: 'ethereum-classic' },
   { label: 'Filecoin', value: 'filecoin' },
+  { label: 'Flow', value: 'flow' },
   { label: 'Horizen', value: 'horizen' },
   { label: 'Litecoin', value: 'litecoin' },
   { label: 'Polkadot', value: 'polkadot' },
+  { label: 'Polygon', value: 'polygon' },
   { label: 'Solana', value: 'solana' },
   { label: 'Stellar', value: 'stellar' },
   { label: 'Tezos', value: 'tezos' },

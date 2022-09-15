@@ -14,6 +14,8 @@ const assetOptions = [
   { label: 'Stepn GMT', value: 'GMT' },
   { label: 'Bonfida FIDA', value: 'FIDA' },
   { label: 'Ethereum Name Service ENS', value: 'ENS' },
+  { label: 'Loopring LRC', value: 'LRC' },
+  { label: 'ImmutableX IMX', value: 'IMX' },
 ];
 
 export const SelectAssets = ({

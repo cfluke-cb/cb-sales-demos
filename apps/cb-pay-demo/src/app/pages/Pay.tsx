@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { initOnRamp } from '@coinbase/cbpay-js';
+import { initOnRamp, generateOnRampURL } from '@coinbase/cbpay-js';
 import {
   CardHeader,
   Typography,
@@ -31,7 +31,6 @@ import {
 import { SelectAssets } from '../components/Pay/SelectAsset';
 
 const appId = '39c3d7f8-c205-463b-a54b-4279a5069577'; //process.env['CBPAY_APPID'];
-const ethWalletAddr = '0x01658f5d899e03492dC832C8eE8839FFD80b7f09';
 const defaultExperience = 'embedded' as Experience;
 const defaultChains = ['solana'] as SupportedBlockchains[];
 const defaultAssets = [] as string[];
@@ -41,6 +40,56 @@ interface CBPayInstanceType {
   open: () => void;
   destroy: () => void;
 }
+
+const createInitParams = (
+  assets: string | string[],
+  blockchains: string | string[],
+  walletAddr: string
+) => {
+  const destinationWallets = [];
+  if (assets.length > 0 && blockchains.length > 0) {
+    if (assets.length === 1 && assets[0] === 'ETH') {
+      destinationWallets.push({
+        address: walletAddr,
+        assets,
+        supportedNetworks: ['polygon'],
+      });
+    } else {
+      destinationWallets.push({
+        address: walletAddr,
+        blockchains,
+        assets,
+      });
+    }
+  } else if (assets.length > 0) {
+    if (assets.length === 1 && assets[0] === 'USDC') {
+      destinationWallets.push({
+        address: walletAddr,
+        assets,
+        supportedNetworks: ['solana'],
+      });
+    } else if (assets.length === 1 && assets[0] === 'ETH') {
+      destinationWallets.push({
+        address: walletAddr,
+        assets,
+        supportedNetworks: ['polygon'],
+      });
+    } else {
+      destinationWallets.push({
+        address: walletAddr,
+        assets,
+      });
+    }
+  } else if (blockchains.length > 0) {
+    destinationWallets.push({
+      address: walletAddr,
+      blockchains,
+    });
+  }
+
+  if (devMode) console.log('setting init params wallets', destinationWallets);
+  return destinationWallets;
+};
 
 export const PayWithCoinbaseButton = ({
   experience,
@@ -69,73 +118,51 @@ export const PayWithCoinbaseButton = ({
   const [events, setEvents] = useState<Array<any>>([]);
 
   useEffect(() => {
-    console.log('initializing');
-    const destinationWallets = [];
-    if (assets.length > 0 && blockchains.length > 0) {
-      if (blockchains.indexOf('ethereum') > -1) {
-        destinationWallets.push({
-          address: ethWalletAddr,
-          blockchains,
-          assets,
-        });
-      } else {
-        destinationWallets.push({
-          address: walletAddr,
-          blockchains,
-          assets,
-        });
-      }
-    } else if (assets.length > 0) {
-      if (assets.indexOf('USDC') > -1 || assets.indexOf('ETH') > -1) {
-        destinationWallets.push({
-          address: ethWalletAddr,
-          assets,
-        });
-      } else {
-        destinationWallets.push({
-          address: walletAddr,
-          assets,
-        });
-      }
-    } else if (blockchains.length > 0) {
-      destinationWallets.push({
-        address: walletAddr,
-        blockchains,
-      });
-    }
+    if (devMode) console.log('initializing onramp embed');
+    const destinationWallets = createInitParams(
+      assets,
+      blockchains,
+      walletAddr
+    );
 
-    const widgetParameters = {
+    const widgetParameters: any = {
       destinationWallets,
-      presetCryptoAmount: presetCrypto !== 0 ? presetCrypto : null,
-      presetFiatAmount: presetFiat !== 0 ? presetFiat : null,
+      defaultNetwork: 'polygon',
     };
+    if (presetCrypto !== 0) widgetParameters.presetCryptoAmount = presetCrypto;
+    if (presetFiat !== 0) widgetParameters.presetFiatAmount = presetCrypto;
 
-    onrampInstance.current = initOnRamp({
-      appId,
-      widgetParameters,
-      onReady: () => {
-        setIsReady(true);
+    initOnRamp(
+      {
+        appId,
+        widgetParameters,
+        onSuccess: () => {
+          console.log('success');
+          handleExit();
+        },
+        onExit: (event: any) => {
+          console.log('exit', event);
+          if (event?.error) setError(event.error);
+          handleExit();
+        },
+        onEvent: (event: any) => {
+          if (!isOpen && event?.eventName !== 'exit') handleOpen();
+          console.log('event', event);
+          setEvents((events) => [...events, event]);
+        },
+        experienceLoggedIn: experience, //'embedded', 'popup', or 'newtab',
+        experienceLoggedOut: experience,
+        closeOnExit: true,
+        closeOnSuccess: true,
       },
-      onSuccess: () => {
-        console.log('success');
-        handleExit();
-      },
-      onExit: (event: any) => {
-        console.log('exit', event);
-        if (event?.error) setError(event.error);
-        handleExit();
-      },
-      onEvent: (event: any) => {
-        if (!isOpen && event?.eventName !== 'exit') handleOpen();
-        console.log('event', event);
-        setEvents((events) => [...events, event]);
-      },
-      experienceLoggedIn: experience, //'embedded', 'popup', or 'newtab',
-      experienceLoggedOut: experience,
-      closeOnExit: true,
-      closeOnSuccess: true,
-    });
-    console.log('initialized', onrampInstance);
+      (error, instance) => {
+        if (instance) {
+          onrampInstance.current = instance;
+          setIsReady(true);
+        }
+      }
+    );
+    if (devMode) console.log('initialized onramp embed', onrampInstance);
     return () => {
       onrampInstance.current?.destroy();
     };
@@ -172,6 +199,8 @@ export const PayWithCoinbaseButton = ({
 };
 
 export const Pay = () => {
+  const { publicKey } = useWallet();
+  const walletAddr = publicKey?.toBase58();
   const [isOpen, setIsOpen] = useState(false);
   const [experienceType, setExperienceType] =
     useState<Experience>(defaultExperience);
@@ -180,8 +209,15 @@ export const Pay = () => {
   const [selectedAssets, setSelectedAssets] = useState<string[]>(defaultAssets);
   const [presetCrypto, setPresetCrypto] = useState(0);
   const [presetFiat, setPresetFiat] = useState(0);
-  const { publicKey } = useWallet();
-  const walletAddr = publicKey?.toBase58();
+  const [overrideWalletAddr, setOverrideWalletAddr] = useState(
+    walletAddr || ''
+  );
+
+  useEffect(() => {
+    if (overrideWalletAddr === '' && walletAddr) {
+      setOverrideWalletAddr(walletAddr);
+    }
+  }, [walletAddr, overrideWalletAddr]);
 
   const handleReset = () => {
     setSelectedBlockchains(defaultChains);
@@ -195,6 +231,27 @@ export const Pay = () => {
 
   const handleExit = () => {
     setIsOpen(false);
+  };
+
+  const genOnRamp = () => {
+    if (!overrideWalletAddr) return;
+    const destinationWallets = createInitParams(
+      selectedAssets,
+      selectedBlockchains,
+      overrideWalletAddr
+    );
+
+    const urlParams: any = {
+      appId,
+      destinationWallets,
+      defaultNetwork: 'polygon',
+    };
+    if (presetCrypto !== 0) urlParams.presetCryptoAmount = presetCrypto;
+    if (presetFiat !== 0) urlParams.presetFiatAmount = presetCrypto;
+
+    console.log('generateOnRampURL params', urlParams);
+    const url = generateOnRampURL(urlParams);
+    window.open(url, 'blank');
   };
 
   return (
@@ -221,6 +278,16 @@ export const Pay = () => {
                           selectedAssets={selectedAssets}
                           setSelectedAssets={setSelectedAssets}
                         />
+                        <FormControl fullWidth sx={{ m: 1 }}>
+                          <TextField
+                            type="text"
+                            label="Destination Wallet Address"
+                            value={overrideWalletAddr}
+                            onChange={(e) =>
+                              setOverrideWalletAddr(e.target.value)
+                            }
+                          />
+                        </FormControl>
                         <FormControl fullWidth sx={{ m: 1 }}>
                           <TextField
                             type="number"
@@ -259,18 +326,25 @@ export const Pay = () => {
 
               <br />
               <br />
-              {walletAddr && (
-                <PayWithCoinbaseButton
-                  experience={experienceType}
-                  walletAddr={walletAddr}
-                  blockchains={selectedBlockchains}
-                  assets={selectedAssets}
-                  presetCrypto={presetCrypto}
-                  presetFiat={presetFiat}
-                  handleOpen={handleOpen}
-                  handleExit={handleExit}
-                  isOpen={isOpen}
-                />
+              {overrideWalletAddr !== '' && (
+                <>
+                  <PayWithCoinbaseButton
+                    experience={experienceType}
+                    walletAddr={overrideWalletAddr}
+                    blockchains={selectedBlockchains}
+                    assets={selectedAssets}
+                    presetCrypto={presetCrypto}
+                    presetFiat={presetFiat}
+                    handleOpen={handleOpen}
+                    handleExit={handleExit}
+                    isOpen={isOpen}
+                  />
+                  {devMode && (
+                    <Button variant="contained" onClick={genOnRamp}>
+                      GenerateOnRampURL
+                    </Button>
+                  )}
+                </>
               )}
               <WalletConnectCheck />
             </CardContent>
