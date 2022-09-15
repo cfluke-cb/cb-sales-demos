@@ -244,7 +244,6 @@ export const Pay = () => {
     const urlParams: any = {
       appId,
       destinationWallets,
-      defaultNetwork: 'polygon',
     };
     if (presetCrypto !== 0) urlParams.presetCryptoAmount = presetCrypto;
     if (presetFiat !== 0) urlParams.presetFiatAmount = presetCrypto;
