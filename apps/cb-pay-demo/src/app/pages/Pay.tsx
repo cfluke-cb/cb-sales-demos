@@ -29,6 +29,7 @@ import {
   SupportedBlockchains,
 } from '../components/Pay/SelectBlockchain';
 import { SelectAssets } from '../components/Pay/SelectAsset';
+import { SelectSupportedNetwork } from '../components/Pay/SelectSupportedNetwork';
 
 const appId = '39c3d7f8-c205-463b-a54b-4279a5069577'; //process.env['CBPAY_APPID'];
 const defaultExperience = 'embedded' as Experience;
@@ -41,18 +42,25 @@ interface CBPayInstanceType {
   destroy: () => void;
 }
 
+type Wallet = {
+  address: string;
+  assets?: string | string[];
+  blockchains?: string | string[];
+  supportedNetworks?: string | string[];
+};
+
 const createInitParams = (
   assets: string | string[],
   blockchains: string | string[],
+  supportedNetwork: string | string[],
   walletAddr: string
 ) => {
-  const destinationWallets = [];
+  const destinationWallets: Wallet[] = [];
   if (assets.length > 0 && blockchains.length > 0) {
     if (assets.length === 1 && assets[0] === 'ETH') {
       destinationWallets.push({
         address: walletAddr,
         assets,
-        supportedNetworks: ['polygon'],
       });
     } else {
       destinationWallets.push({
@@ -66,13 +74,11 @@ const createInitParams = (
       destinationWallets.push({
         address: walletAddr,
         assets,
-        supportedNetworks: ['solana'],
       });
     } else if (assets.length === 1 && assets[0] === 'ETH') {
       destinationWallets.push({
         address: walletAddr,
         assets,
-        supportedNetworks: ['polygon'],
       });
     } else {
       destinationWallets.push({
@@ -87,6 +93,12 @@ const createInitParams = (
     });
   }
 
+  if (supportedNetwork.length > 0) {
+    destinationWallets.forEach((w) => {
+      w.supportedNetworks = supportedNetwork;
+    });
+  }
+
   if (devMode) console.log('setting init params wallets', destinationWallets);
   return destinationWallets;
 };
@@ -96,6 +108,7 @@ export const PayWithCoinbaseButton = ({
   walletAddr,
   blockchains,
   assets,
+  supportedNetworks,
   presetCrypto,
   presetFiat,
   handleOpen,
@@ -106,6 +119,7 @@ export const PayWithCoinbaseButton = ({
   walletAddr: string;
   blockchains: SupportedBlockchains[];
   assets: string[];
+  supportedNetworks: string[];
   presetCrypto: number;
   presetFiat: number;
   handleOpen: () => void;
@@ -122,46 +136,45 @@ export const PayWithCoinbaseButton = ({
     const destinationWallets = createInitParams(
       assets,
       blockchains,
+      supportedNetworks,
       walletAddr
     );
 
     const widgetParameters: any = {
       destinationWallets,
-      defaultNetwork: 'polygon',
+      //defaultNetwork: 'polygon',
     };
     if (presetCrypto !== 0) widgetParameters.presetCryptoAmount = presetCrypto;
-    if (presetFiat !== 0) widgetParameters.presetFiatAmount = presetCrypto;
-
-    initOnRamp(
-      {
-        appId,
-        widgetParameters,
-        onSuccess: () => {
-          console.log('success');
-          handleExit();
-        },
-        onExit: (event: any) => {
-          console.log('exit', event);
-          if (event?.error) setError(event.error);
-          handleExit();
-        },
-        onEvent: (event: any) => {
-          if (!isOpen && event?.eventName !== 'exit') handleOpen();
-          console.log('event', event);
-          setEvents((events) => [...events, event]);
-        },
-        experienceLoggedIn: experience, //'embedded', 'popup', or 'newtab',
-        experienceLoggedOut: experience,
-        closeOnExit: true,
-        closeOnSuccess: true,
+    if (presetFiat !== 0) widgetParameters.presetFiatAmount = presetFiat;
+    const initConfig = {
+      appId,
+      widgetParameters,
+      onSuccess: () => {
+        console.log('success');
+        handleExit();
       },
-      (error, instance) => {
-        if (instance) {
-          onrampInstance.current = instance;
-          setIsReady(true);
-        }
+      onExit: (event: any) => {
+        console.log('exit', event);
+        if (event?.error) setError(event.error);
+        handleExit();
+      },
+      onEvent: (event: any) => {
+        if (!isOpen && event?.eventName !== 'exit') handleOpen();
+        console.log('event', event);
+        setEvents((events) => [...events, event]);
+      },
+      experienceLoggedIn: experience, //'embedded', 'popup', or 'newtab',
+      experienceLoggedOut: experience,
+      closeOnExit: true,
+      closeOnSuccess: true,
+    };
+    console.log('starting initOnRamp', initConfig);
+    initOnRamp(initConfig, (error, instance) => {
+      if (instance) {
+        onrampInstance.current = instance;
+        setIsReady(true);
       }
-    );
+    });
     if (devMode) console.log('initialized onramp embed', onrampInstance);
     return () => {
       onrampInstance.current?.destroy();
@@ -207,6 +220,9 @@ export const Pay = () => {
   const [selectedBlockchains, setSelectedBlockchains] =
     useState<SupportedBlockchains[]>(defaultChains);
   const [selectedAssets, setSelectedAssets] = useState<string[]>(defaultAssets);
+  const [selectedSupportedNetwork, setSelectedSupportedNetwork] = useState<
+    string[]
+  >([]);
   const [presetCrypto, setPresetCrypto] = useState(0);
   const [presetFiat, setPresetFiat] = useState(0);
   const [overrideWalletAddr, setOverrideWalletAddr] = useState(
@@ -238,6 +254,7 @@ export const Pay = () => {
     const destinationWallets = createInitParams(
       selectedAssets,
       selectedBlockchains,
+      selectedSupportedNetwork,
       overrideWalletAddr
     );
 
@@ -246,7 +263,7 @@ export const Pay = () => {
       destinationWallets,
     };
     if (presetCrypto !== 0) urlParams.presetCryptoAmount = presetCrypto;
-    if (presetFiat !== 0) urlParams.presetFiatAmount = presetCrypto;
+    if (presetFiat !== 0) urlParams.presetFiatAmount = presetFiat;
 
     console.log('generateOnRampURL params', urlParams);
     const url = generateOnRampURL(urlParams);
@@ -276,6 +293,10 @@ export const Pay = () => {
                         <SelectAssets
                           selectedAssets={selectedAssets}
                           setSelectedAssets={setSelectedAssets}
+                        />
+                        <SelectSupportedNetwork
+                          selectedAssets={selectedSupportedNetwork}
+                          setSelectedAssets={setSelectedSupportedNetwork}
                         />
                         <FormControl fullWidth sx={{ m: 1 }}>
                           <TextField
@@ -332,6 +353,7 @@ export const Pay = () => {
                     walletAddr={overrideWalletAddr}
                     blockchains={selectedBlockchains}
                     assets={selectedAssets}
+                    supportedNetworks={selectedSupportedNetwork}
                     presetCrypto={presetCrypto}
                     presetFiat={presetFiat}
                     handleOpen={handleOpen}

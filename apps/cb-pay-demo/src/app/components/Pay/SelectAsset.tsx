@@ -2,6 +2,7 @@ import { FormControl, Select, MenuItem, InputLabel } from '@mui/material';
 
 const assetOptions = [
   { label: 'USDC', value: 'USDC' },
+  { label: 'BTC', value: 'BTC' },
   { label: 'ETH', value: 'ETH' },
   { label: 'Alchemix ALCX', value: 'ALCX' },
   { label: 'Chainlink LINK', value: 'LINK' },
