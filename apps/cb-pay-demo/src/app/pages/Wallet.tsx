@@ -54,9 +54,18 @@ export const Wallet = () => {
   const handleWalletChange = (event: SelectChangeEvent) => {
     console.log(event.target.value, CoinbaseWalletName.toString());
     setWalletName(event.target.value);
-    if (walletName === CoinbaseWalletName.toString()) {
+    console.log(
+      'changing wallet',
+      event.target.value,
+      CoinbaseWalletName.toString(),
+      PhantomWalletName.toString()
+    );
+    if (event.target.value !== walletName) {
+      disconnectWallet();
+    }
+    if (event.target.value === CoinbaseWalletName.toString()) {
       select(CoinbaseWalletName);
-    } else if (walletName === PhantomWalletName.toString()) {
+    } else if (event.target.value === PhantomWalletName.toString()) {
       select(PhantomWalletName);
     }
   };

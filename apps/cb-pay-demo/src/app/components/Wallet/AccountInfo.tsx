@@ -11,6 +11,7 @@ export const AccountInfo = ({ onClick }: { onClick: (i: number) => void }) => {
         Address:
         <Typography
           variant="inherit"
+          component={'span'}
           textOverflow={'ellipsis'}
           fontWeight={400}
           paddingLeft={2}
@@ -23,6 +24,7 @@ export const AccountInfo = ({ onClick }: { onClick: (i: number) => void }) => {
         Balance:
         <Typography
           variant="inherit"
+          component={'span'}
           textOverflow={'ellipsis'}
           fontWeight={400}
           paddingLeft={2}
