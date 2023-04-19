@@ -31,7 +31,7 @@ import {
 import { SelectAssets } from '../components/Pay/SelectAsset';
 import { SelectSupportedNetwork } from '../components/Pay/SelectSupportedNetwork';
 
-const appId = '39c3d7f8-c205-463b-a54b-4279a5069577'; //process.env['CBPAY_APPID'];
+const appId = process.env['NX_CBPAY_APPID'] || 'did not work';
 const defaultExperience = 'embedded' as Experience;
 const defaultChains = ['solana'] as SupportedBlockchains[];
 const defaultAssets = [] as string[];
@@ -168,14 +168,22 @@ export const PayWithCoinbaseButton = ({
       closeOnExit: true,
       closeOnSuccess: true,
     };
+    console.log('trying to destroy instance', onrampInstance?.current);
+    onrampInstance?.current?.destroy();
+    setIsReady(false);
     console.log('starting initOnRamp', initConfig);
     initOnRamp(initConfig, (error, instance) => {
       if (instance) {
         onrampInstance.current = instance;
         setIsReady(true);
       }
+      if (error) {
+        console.error(error);
+      }
+
+      if (devMode) console.log('initialized onramp embed', onrampInstance);
     });
-    if (devMode) console.log('initialized onramp embed', onrampInstance);
+
     return () => {
       onrampInstance.current?.destroy();
     };

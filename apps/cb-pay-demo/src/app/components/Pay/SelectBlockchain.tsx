@@ -25,6 +25,7 @@ export type SupportedBlockchains =
 
 const blockchainOptions = [
   { label: 'Algorand', value: 'algorand' },
+  { label: 'Arbitrum', value: 'arbitrum' },
   { label: 'Avalanche C-chain', value: 'avalanche-c-chain' },
   { label: 'Bitcoin', value: 'bitcoin' },
   { label: 'Bitcoin Cash', value: 'bitcoin-cash' },
@@ -38,9 +39,11 @@ const blockchainOptions = [
   { label: 'Ethereum', value: 'ethereum' },
   { label: 'Ethereum Classic', value: 'ethereum-classic' },
   { label: 'Filecoin', value: 'filecoin' },
+  { label: 'Flare', value: 'flare' },
   { label: 'Flow', value: 'flow' },
   { label: 'Horizen', value: 'horizen' },
   { label: 'Litecoin', value: 'litecoin' },
+  { label: 'Optimism', value: 'optimism' },
   { label: 'Polkadot', value: 'polkadot' },
   { label: 'Polygon', value: 'polygon' },
   { label: 'Solana', value: 'solana' },
